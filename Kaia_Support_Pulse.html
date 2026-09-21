@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaia Support Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --page-bg:#f9f9f7;
+    --surface:#fcfcfb;
+    --surface-raised:#ffffff;
+    --ink:#0b0b0b;
+    --ink-2:#52514e;
+    --ink-muted:#898781;
+    --hairline:#e1e0d9;
+    --baseline:#c3c2b7;
+    --border:rgba(11,11,11,0.10);
+    --accent:#1c5cab;
+    --accent-strong:#0d366b;
+    --slot-2:#eb6834;
+    --status-critical:#d03b3b;
+    --status-serious:#ec835a;
+    --status-warning:#fab219;
+    --status-good:#0ca30c;
+    --chip-bg:#eef2f8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --page-bg:#0d0d0d;
+      --surface:#1a1a19;
+      --surface-raised:#212120;
+      --ink:#ffffff;
+      --ink-2:#c3c2b7;
+      --ink-muted:#8f8d86;
+      --hairline:#2c2c2a;
+      --baseline:#383835;
+      --border:rgba(255,255,255,0.10);
+      --accent:#3987e5;
+      --accent-strong:#86b6ef;
+      --slot-2:#d95926;
+      --status-critical:#e66767;
+      --status-serious:#ec835a;
+      --status-warning:#fab219;
+      --status-good:#0ca30c;
+      --chip-bg:#182234;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page-bg:#0d0d0d;
+    --surface:#1a1a19;
+    --surface-raised:#212120;
+    --ink:#ffffff;
+    --ink-2:#c3c2b7;
+    --ink-muted:#8f8d86;
+    --hairline:#2c2c2a;
+    --baseline:#383835;
+    --border:rgba(255,255,255,0.10);
+    --accent:#3987e5;
+    --accent-strong:#86b6ef;
+    --slot-2:#d95926;
+    --status-critical:#e66767;
+    --status-serious:#ec835a;
+    --status-warning:#fab219;
+    --status-good:#0ca30c;
+    --chip-bg:#182234;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{background:var(--page-bg);}
+  body{
+    margin:0;
+    background:var(--page-bg);
+    color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    padding-block:40px;
+  }
+  .page{
+    max-width:880px;
+    margin:0 auto;
+    padding-inline:24px;
+    display:flex;
+    flex-direction:column;
+    gap:36px;
+  }
+  h1,h2,h3{font-family:"Manrope",system-ui,sans-serif; text-wrap:balance; margin:0;}
+  .eyebrow{
+    font-family:"Manrope",system-ui,sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    letter-spacing:0.09em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+
+  /* ---- Header ---- */
+  header{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--hairline);
+  }
+  header h1{font-size:34px; font-weight:800; letter-spacing:-0.01em;}
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    color:var(--ink-2);
+    font-size:13.5px;
+    margin-top:4px;
+  }
+  .meta-row span{white-space:nowrap;}
+  .meta-row b{color:var(--ink); font-weight:600;}
+
+  /* ---- Section shell ---- */
+  section{display:flex; flex-direction:column; gap:16px;}
+  .section-title{font-size:19px; font-weight:800;}
+  .section-sub{color:var(--ink-2); font-size:13.5px; margin-top:-8px;}
+
+  .lede{
+    font-size:16.5px;
+    line-height:1.65;
+    color:var(--ink);
+    max-width:74ch;
+  }
+  .lede strong{font-weight:700;}
+
+  /* ---- Stat tiles ---- */
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .stat-tile{
+    background:var(--surface-raised);
+    padding:18px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .stat-value{
+    font-family:"Manrope",system-ui,sans-serif;
+    font-weight:800;
+    font-size:28px;
+    letter-spacing:-0.01em;
+    font-variant-numeric:tabular-nums;
+  }
+  .stat-label{font-size:12px; color:var(--ink-2); line-height:1.35;}
+
+  /* ---- Bar chart (ranked, single-hue) ---- */
+  .barlist{display:flex; flex-direction:column; gap:10px;}
+  .bar-row{display:grid; grid-template-columns:200px 1fr 56px; align-items:center; gap:12px;}
+  .bar-label{font-size:13px; color:var(--ink); text-align:right;}
+  .bar-track{
+    position:relative;
+    height:20px;
+    background:var(--surface);
+    border:1px solid var(--hairline);
+    border-radius:5px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    position:absolute; inset:0 auto 0 0;
+    height:100%;
+    border-radius:4px;
+    background:var(--accent);
+  }
+  .bar-fill.alt{background:var(--slot-2);}
+  .bar-val{font-size:12.5px; color:var(--ink-2); font-variant-numeric:tabular-nums; text-align:right;}
+
+  /* ---- Composition bar (stacked, status/categorical) ---- */
+  .stack{display:flex; height:34px; border-radius:8px; overflow:hidden; border:1px solid var(--hairline);}
+  .stack > div{display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:600; color:#fff; font-variant-numeric:tabular-nums;}
+  .stack-legend{display:flex; flex-wrap:wrap; gap:14px; font-size:12.5px; color:var(--ink-2);}
+  .stack-legend .dot{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px; vertical-align:middle;}
+
+  /* ---- Table ---- */
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  th{
+    text-align:left;
+    font-family:"Manrope",system-ui,sans-serif;
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--ink-muted);
+    font-weight:700;
+    padding:0 10px 8px;
+    border-bottom:1px solid var(--hairline);
+  }
+  td{
+    padding:9px 10px;
+    border-bottom:1px solid var(--hairline);
+    vertical-align:top;
+  }
+  tr:last-child td{border-bottom:none;}
+  td.num{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap;}
+  .table-wrap{overflow-x:auto; border:1px solid var(--hairline); border-radius:10px;}
+  .table-wrap table{min-width:520px;}
+  .table-wrap th:first-child, .table-wrap td:first-child{padding-left:14px;}
+  .table-wrap th:last-child, .table-wrap td:last-child{padding-right:14px;}
+
+  /* ---- Pills ---- */
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:2px 9px;
+    border-radius:999px;
+    font-size:11.5px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .pill.critical{background:color-mix(in srgb, var(--status-critical) 16%, transparent); color:var(--status-critical);}
+  .pill.high{background:color-mix(in srgb, var(--status-serious) 18%, transparent); color:var(--status-serious);}
+  .pill::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+  /* ---- Callout cards ---- */
+  .card-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .card{
+    background:var(--surface-raised);
+    border:1px solid var(--hairline);
+    border-radius:12px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .card-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .card-id{font-family:"Manrope",system-ui,sans-serif; font-weight:700; font-size:12.5px; color:var(--ink-muted);}
+  .card-account{font-family:"Manrope",system-ui,sans-serif; font-weight:800; font-size:15px;}
+  .card-area{font-size:11.5px; color:var(--ink-2);}
+  .card-text{font-size:13px; color:var(--ink-2); line-height:1.55;}
+
+  /* ---- Two-col ---- */
+  .two-col{display:grid; grid-template-columns:1.1fr 0.9fr; gap:28px; align-items:start;}
+
+  footer{
+    border-top:1px solid var(--hairline);
+    padding-top:18px;
+    color:var(--ink-muted);
+    font-size:12px;
+    line-height:1.6;
+  }
+  footer .caveats{display:flex; flex-direction:column; gap:4px; margin-top:6px;}
+
+  @media (max-width:720px){
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .card-grid{grid-template-columns:1fr;}
+    .two-col{grid-template-columns:1fr;}
+    .bar-row{grid-template-columns:120px 1fr 44px;}
+    .bar-label{font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <span class="eyebrow">Stakeholder brief · Kaia support trends</span>
+    <h1>Kaia Support Pulse</h1>
+    <div class="meta-row">
+      <span>Source: <b>#kaia-questions</b> Slack channel</span>
+      <span>Window: <b>May 20 – Sep 17, 2026</b> (120 days)</span>
+      <span><b>309</b> tickets classified</span>
+      <span>Prepared <b>Sep 21, 2026</b></span>
+    </div>
+  </header>
+
+  <section>
+    <p class="lede">
+      Over the last 120 days, <strong>#kaia-questions</strong> generated 309 distinct support
+      threads. The headline: this is <strong>not</strong> an onboarding channel — <strong>60% of
+      volume sits in Production/Steady-State</strong>, meaning most tickets come from customers
+      and internal teams already live on Kaia hitting recording, consent, and admin friction
+      day to day. <strong>Meeting Recording/Transcription</strong> and <strong>Data Privacy &amp;
+      Recording Consent</strong> are the two largest problem areas, and three issues this window
+      were significant enough to be flagged Critical. Enterprise customers and internal
+      (sales/dogfood) traffic are split almost exactly down the middle.
+    </p>
+  </section>
+
+  <section>
+    <div class="stat-grid">
+      <div class="stat-tile">
+        <div class="stat-value">309</div>
+        <div class="stat-label">Tickets in 120 days<br>(~2.6 / day)</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">60%</div>
+        <div class="stat-label">In Production/Steady-State<br>— live customers, not onboarding</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">40</div>
+        <div class="stat-label">Critical + High priority<br>(13% of all tickets)</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-value">51 / 49</div>
+        <div class="stat-label">Enterprise vs. Internal split<br>(157 vs. 152 tickets)</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Where the volume lives</h2>
+    <div class="section-sub">Tickets by lifecycle phase — 309 total</div>
+    <div class="barlist">
+      <div class="bar-row"><div class="bar-label">Production / Steady-State</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">186</div></div>
+      <div class="bar-row"><div class="bar-label">Expansion / Optimization</div><div class="bar-track"><div class="bar-fill" style="width:25.8%"></div></div><div class="bar-val">48</div></div>
+      <div class="bar-row"><div class="bar-label">Pre-Sale / Enablement</div><div class="bar-track"><div class="bar-fill" style="width:22.0%"></div></div><div class="bar-val">41</div></div>
+      <div class="bar-row"><div class="bar-label">Implementation</div><div class="bar-track"><div class="bar-fill" style="width:12.4%"></div></div><div class="bar-val">23</div></div>
+      <div class="bar-row"><div class="bar-label">Pilot</div><div class="bar-track"><div class="bar-fill" style="width:3.8%"></div></div><div class="bar-val">7</div></div>
+      <div class="bar-row"><div class="bar-label">Go-Live</div><div class="bar-track"><div class="bar-fill" style="width:2.2%"></div></div><div class="bar-val">4</div></div>
+    </div>
+
+    <div class="section-sub" style="margin-top:8px;">Inside Production/Steady-State (186 tickets) — where exactly is the friction?</div>
+    <div class="barlist">
+      <div class="bar-row"><div class="bar-label">Config Tuning &amp; Maintenance</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">46</div></div>
+      <div class="bar-row"><div class="bar-label">Recording/Transcription Failure</div><div class="bar-track"><div class="bar-fill" style="width:71.7%"></div></div><div class="bar-val">33</div></div>
+      <div class="bar-row"><div class="bar-label">Admin/Access &amp; Governance</div><div class="bar-track"><div class="bar-fill" style="width:71.7%"></div></div><div class="bar-val">33</div></div>
+      <div class="bar-row"><div class="bar-label">UX &amp; Discoverability</div><div class="bar-track"><div class="bar-fill" style="width:45.7%"></div></div><div class="bar-val">21</div></div>
+      <div class="bar-row"><div class="bar-label">Platform Incident/Availability</div><div class="bar-track"><div class="bar-fill" style="width:30.4%"></div></div><div class="bar-val">14</div></div>
+      <div class="bar-row"><div class="bar-label">Integration/Calendar Sync Failure</div><div class="bar-track"><div class="bar-fill" style="width:30.4%"></div></div><div class="bar-val">14</div></div>
+      <div class="bar-row"><div class="bar-label">Monitoring/Reporting &amp; Metering</div><div class="bar-track"><div class="bar-fill" style="width:26.1%"></div></div><div class="bar-val">12</div></div>
+      <div class="bar-row"><div class="bar-label">Summary/Notes Accuracy</div><div class="bar-track"><div class="bar-fill" style="width:13.0%"></div></div><div class="bar-val">6</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Product areas driving tickets</h2>
+    <div class="section-sub">Top 8 of 14 areas shown — remaining 6 (Export/Retention, Coaching, AI Summary, Pricing, Translation, Voice) total 54</div>
+    <div class="barlist">
+      <div class="bar-row"><div class="bar-label">Meeting Recording/Transcription</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">70</div></div>
+      <div class="bar-row"><div class="bar-label">Data Privacy &amp; Recording Consent</div><div class="bar-track"><div class="bar-fill" style="width:52.9%"></div></div><div class="bar-val">37</div></div>
+      <div class="bar-row"><div class="bar-label">Calendar &amp; Conferencing Integration</div><div class="bar-track"><div class="bar-fill" style="width:50.0%"></div></div><div class="bar-val">35</div></div>
+      <div class="bar-row"><div class="bar-label">Other (6 smaller areas)</div><div class="bar-track"><div class="bar-fill alt" style="width:77.1%"></div></div><div class="bar-val">54</div></div>
+      <div class="bar-row"><div class="bar-label">Admin/Licensing/Permissions</div><div class="bar-track"><div class="bar-fill" style="width:37.1%"></div></div><div class="bar-val">26</div></div>
+      <div class="bar-row"><div class="bar-label">Deal/Call Insights</div><div class="bar-track"><div class="bar-fill" style="width:34.3%"></div></div><div class="bar-val">24</div></div>
+      <div class="bar-row"><div class="bar-label">Reporting/Analytics</div><div class="bar-track"><div class="bar-fill" style="width:31.4%"></div></div><div class="bar-val">22</div></div>
+      <div class="bar-row"><div class="bar-label">Platform/Reliability</div><div class="bar-track"><div class="bar-fill" style="width:30.0%"></div></div><div class="bar-val">21</div></div>
+      <div class="bar-row"><div class="bar-label">CRM Sync/Integration</div><div class="bar-track"><div class="bar-fill" style="width:28.6%"></div></div><div class="bar-val">20</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two-col">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <h2 class="section-title">Priority mix</h2>
+        <div class="stack">
+          <div style="width:1.0%; background:var(--status-critical);"></div>
+          <div style="width:12.0%; background:var(--status-serious);"></div>
+          <div style="width:49.5%; background:var(--status-warning); color:#3a2600;">50%</div>
+          <div style="width:37.5%; background:var(--status-good);">37%</div>
+        </div>
+        <div class="stack-legend">
+          <span><span class="dot" style="background:var(--status-critical);"></span>Critical — 3</span>
+          <span><span class="dot" style="background:var(--status-serious);"></span>High — 37</span>
+          <span><span class="dot" style="background:var(--status-warning);"></span>Medium — 153</span>
+          <span><span class="dot" style="background:var(--status-good);"></span>Low — 116</span>
+        </div>
+        <div class="section-sub" style="margin-top:2px;">Priority is an inferred urgency signal (blocker/escalation language), not a real SLA field.</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <h2 class="section-title">Account type</h2>
+        <div class="stack">
+          <div style="width:50.8%; background:var(--accent);">51%</div>
+          <div style="width:49.2%; background:var(--slot-2);">49%</div>
+        </div>
+        <div class="stack-legend">
+          <span><span class="dot" style="background:var(--accent);"></span>Enterprise Customer — 157</span>
+          <span><span class="dot" style="background:var(--slot-2);"></span>Internal / Dogfood — 152</span>
+        </div>
+        <div class="section-sub" style="margin-top:2px;">Nearly half of all traffic is internal (Sales/CS/Support asking on a customer's behalf, or Outreach's own dogfood usage).</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Highest-severity issues this window</h2>
+    <div class="section-sub">All 3 Critical tickets, plus notable High-priority escalations by named account</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-head"><span class="card-id">KAIA-0238</span><span class="pill critical">Critical</span></div>
+        <div class="card-account">Articulate · Validity · Kojo</div>
+        <div class="card-area">Data Privacy &amp; Recording Consent</div>
+        <div class="card-text">Zoom consent-page error on public calendar bookings hit three customers; fleet-wide stopgap shipped, root-fix filed as VI-15998.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-id">KAIA-0261</span><span class="pill critical">Critical</span></div>
+        <div class="card-account">Motive</div>
+        <div class="card-area">Coaching / Scorecards</div>
+        <div class="card-text">Auto-scoring stalled a week+ on a retry-queue backlog cap; ~50k rows backed up. Fixed and confirmed cleared.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-id">KAIA-0282</span><span class="pill critical">Critical</span></div>
+        <div class="card-account">MarginEdge</div>
+        <div class="card-area">Meeting Recording/Transcription</div>
+        <div class="card-text">Recordings starting late / ending early from a Twilio stream disconnect and a Meet/Webex bot-recovery bug. Fixed in production.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-id">KAIA-0019</span><span class="pill high">High</span></div>
+        <div class="card-account">SailPoint</div>
+        <div class="card-area">Data Privacy &amp; Recording Consent</div>
+        <div class="card-text">Internal 1:1s were auto-recorded and visible org-wide — no setting exists to exclude internal meetings. Open gap, not a bug.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-id">KAIA-0256</span><span class="pill high">High</span></div>
+        <div class="card-account">PNL Fintech (FinOm)</div>
+        <div class="card-area">Translation / Language</div>
+        <div class="card-text">Non-English calls still mis-detected as English, producing unusable transcripts — threatening a $106K Amplify expansion.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-id">KAIA-0114</span><span class="pill high">High</span></div>
+        <div class="card-account">DoorDash</div>
+        <div class="card-area">Meeting Recording/Transcription</div>
+        <div class="card-text">Live transcript failed mid-call during a high-value pilot competing directly against Gong.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two-col">
+      <div>
+        <h2 class="section-title">Ticket volume by month</h2>
+        <div class="section-sub">September is partial (17 of 30 days in window)</div>
+        <div class="barlist" style="margin-top:8px;">
+          <div class="bar-row"><div class="bar-label">May 2026</div><div class="bar-track"><div class="bar-fill" style="width:46.3%"></div></div><div class="bar-val">38</div></div>
+          <div class="bar-row"><div class="bar-label">June 2026</div><div class="bar-track"><div class="bar-fill" style="width:92.7%"></div></div><div class="bar-val">76</div></div>
+          <div class="bar-row"><div class="bar-label">July 2026</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">82</div></div>
+          <div class="bar-row"><div class="bar-label">August 2026</div><div class="bar-track"><div class="bar-fill" style="width:89.0%"></div></div><div class="bar-val">73</div></div>
+          <div class="bar-row"><div class="bar-label">Sep (partial)</div><div class="bar-track"><div class="bar-fill" style="width:48.8%"></div></div><div class="bar-val">40</div></div>
+        </div>
+      </div>
+      <div>
+        <h2 class="section-title">Who's asking</h2>
+        <div class="section-sub">By requester function, all 309 tickets</div>
+        <div class="barlist" style="margin-top:8px;">
+          <div class="bar-row"><div class="bar-label">Sales</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">93</div></div>
+          <div class="bar-row"><div class="bar-label">Professional Services</div><div class="bar-track"><div class="bar-fill" style="width:63.4%"></div></div><div class="bar-val">59</div></div>
+          <div class="bar-row"><div class="bar-label">FDE</div><div class="bar-track"><div class="bar-fill" style="width:60.2%"></div></div><div class="bar-val">56</div></div>
+          <div class="bar-row"><div class="bar-label">Support</div><div class="bar-track"><div class="bar-fill" style="width:31.2%"></div></div><div class="bar-val">29</div></div>
+          <div class="bar-row"><div class="bar-label">Customer Experience</div><div class="bar-track"><div class="bar-fill" style="width:24.7%"></div></div><div class="bar-val">23</div></div>
+          <div class="bar-row"><div class="bar-label">Other / unclear title</div><div class="bar-track"><div class="bar-fill" style="width:23.7%"></div></div><div class="bar-val">22</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Top accounts by ticket volume</h2>
+    <div class="section-sub">Named enterprise/customer accounts only — internal and unattributed tickets excluded</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Account</th><th style="text-align:right">Tickets</th><th>Account</th><th style="text-align:right">Tickets</th></tr></thead>
+        <tbody>
+          <tr><td>SailPoint</td><td class="num">9</td><td>Routeware</td><td class="num">2</td></tr>
+          <tr><td>Motive</td><td class="num">5</td><td>Vector Solutions</td><td class="num">2</td></tr>
+          <tr><td>MarginEdge</td><td class="num">5</td><td>FreshWorks</td><td class="num">2</td></tr>
+          <tr><td>Lyft</td><td class="num">4</td><td>SAP</td><td class="num">2</td></tr>
+          <tr><td>Databricks</td><td class="num">4</td><td>American Express</td><td class="num">2</td></tr>
+          <tr><td>DoorDash</td><td class="num">4</td><td>Subsplash</td><td class="num">2</td></tr>
+          <tr><td>DigitalOcean</td><td class="num">4</td><td>HighRadius</td><td class="num">3</td></tr>
+          <tr><td>Sonar Source</td><td class="num">3</td><td>—</td><td class="num"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <strong style="color:var(--ink);">Methodology &amp; caveats</strong>
+    <div class="caveats">
+      <span>• Each Slack thread (parent message + all replies) in #kaia-questions was treated as one ticket; 18 non-substantive fragments (empty messages, "bumping" duplicates, one-word replies) were excluded from counts.</span>
+      <span>• Requester role/function is based on verified Slack profile titles where available; ambiguous titles are marked "inferred" in the underlying data.</span>
+      <span>• Priority (Critical/High/Medium/Low) is inferred from urgency language in the thread — it is an analytical estimate, not a real support-queue SLA field.</span>
+      <span>• Window covers the most recent 120 days (May 20 – Sep 17, 2026), not a full year — a fuller trailing-12-month pull can be run as a follow-up.</span>
+      <span>• Full 309-row ticket detail, plus Trends / Phase Breakdown / Requesters tabs, is in the companion workbook <code>Kaia_Support_Tickets_120d.xlsx</code>.</span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
